@@ -1,0 +1,8 @@
+<p style="color: green"><%= notice %></p>
+
+<h1>Footballs Details</h1>
+<%= link_to "All Footballer", football_players_path %>
+<%= form_tag( '/auth/google_oauth2', method: "post", data: {turbo: false}, remote: true) do %>
+    <button> Sign in with Google </button>
+<% end %>
+<%= link_to "Swagger Documentation", rswag_ui_path %> 
