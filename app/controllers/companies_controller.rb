@@ -1,8 +1,8 @@
 require 'time'
 require 'date'
-class OrdersController < ApplicationController
+class CompaniesController < ApplicationController
 
-  before_action :set_order, only: %i[ show edit update destroy ]
+  before_action :set_company, only: %i[ show edit update destroy ]
   skip_before_action :verify_authenticity_token
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
@@ -10,15 +10,15 @@ class OrdersController < ApplicationController
   #include Pagy::Helpers
 
   def static
-    render 'orders/staticpage'
+    render 'companies/staticpage'
   end
 
   # GET /earthquakes or /earthquakes.json
   def index
-    @orders = Rails.cache.fetch('orders:index', expires_in: 1.hour) do
-      Order.all
+    @companies = Rails.cache.fetch('companies:index', expires_in: 1.hour) do
+      Company.all
     end
-    @pagy, records = pagy(@orders, items: 20)
+    @pagy, records = pagy(@companies, items: 20)
 
     pagination_links = {
       first: pagy_url_for(@pagy, 1),
@@ -28,7 +28,7 @@ class OrdersController < ApplicationController
     }
     
     render json: {
-      data: ActiveModelSerializers::SerializableResource.new(records, each_serializer: OrderSerializer),
+      data: ActiveModelSerializers::SerializableResource.new(records, each_serializer: CompanySerializer),
       pagination: {
         current_page: @pagy.page,
         total_pages: @pagy.pages,
@@ -41,9 +41,9 @@ class OrdersController < ApplicationController
 
   # GET /earthquakes/1 or /earthquakes/1.json
   def show
-    # @earthquake = Earthquake.find(params[:id])
-    if @order
-      render json: @order, each_serializer: OrderSerializer
+    
+    if @company
+      render json: @company, each_serializer: CompanySerializer
     else
       render json: {error: "Order record not found"}, status: :not_found
     end
@@ -53,15 +53,15 @@ class OrdersController < ApplicationController
   def create
     if session[:user_id]
 
-      @order = Order.new(order_params)
+      @company = Company.new(company_params)
 
       respond_to do |format|
-        if @order.save
+        if @company.save
           #format.html { redirect_to earthquake_url(@earthquake), notice: "Earthquake was successfully created." }
-          format.json { render :show, status: :created, location: @order}
+          format.json { render :show, status: :created, location: @company}
         else
           #format.html { render :new, status: :unprocessable_entity }
-          format.json { render json: @order.errors, status: :unprocessable_entity }
+          format.json { render json: @company.errors, status: :unprocessable_entity }
         end
       end
     else
@@ -73,12 +73,12 @@ class OrdersController < ApplicationController
   def update
     if session[:user_id]
       respond_to do |format|
-        if @order.update(order_params)
+        if @company.update(company_params)
           #format.html { redirect_to earthquake_url(@earthquake), notice: "Earthquake was successfully updated." }
-          format.json { render :show, status: :ok, location: @order }
+          format.json { render :show, status: :ok, location: @company }
         else
           #format.html { render :edit, status: :unprocessable_entity }
-          format.json { render json: @order.errors, status: :unprocessable_entity }
+          format.json { render json: @company.errors, status: :unprocessable_entity }
         end
       end
     else
@@ -91,7 +91,7 @@ class OrdersController < ApplicationController
 
     if session[:user_id]
 
-      @order.destroy
+      @company.destroy
 
       respond_to do |format|
         #format.html { redirect_to earthquakes_url, notice: "Earthquake was successfully destroyed." }
@@ -104,39 +104,26 @@ class OrdersController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
-    def set_order
-      @order = Order.find(params[:id])
+    def set_company
+      @company = Company.find(params[:id])
     end
 
     def record_not_found
-      render json: {error: "order record not found"}, status: :not_found
+      render json: {error: "Company record not found"}, status: :not_found
     end
   
     # Only allow a list of trusted parameters through.
-    def order_params
+    def company_params
       #params.fetch(:earthquake, {})
-      if params[:order][:order_date]
-        #puts params[:order][:order_date]
-        date_string = params[:order][:order_date]
-        puts date_string
-        date = Date.parse(params[:order][:order_date])
-        puts date
-        params[:order][:order_date] = date
-      end
-      if params[:order][:required_date]
-        date_string = params[:order][:required_date]
+      
+      if params[:company][:founded]
+        date_string = params[:company][:founded]
         date = Date.parse(date_string)
-        puts date
-        params[:order][:required_date] = date
-      end
-      if params[:order][:shipped_date]
-        date_string = params[:order][:shipped_date]
-        date = Date.parse(date_string)
-        puts date
-        params[:order][:shipped_date] = date
+        #puts date
+        params[:company][:founded] = date.year
       end
       puts "good"
-      params.fetch(:order, {}).permit(:customer, :employee_id, :order_date, :required_date, :shipped_date, :shipped_id, :freight)
+      params.fetch(:company, {}).permit(:organization_id, :name, :website, :founded, :country, :description, :number_of_employees, :industry )
       
     end
 end

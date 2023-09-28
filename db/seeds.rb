@@ -21,11 +21,18 @@ require 'time'
 #  )
 #end
 
-csv_path = Rails.root.join('new_order.csv') # assuming the file is in the root directory
+csv_path = Rails.root.join('organizations.csv') # assuming the file is in the root directory
 CSV.foreach(csv_path,  headers: true) do |row|
 
   
-  Order.create!(
-    customer: row["customer"], employee_id: row["employee_id"], order_date: row["order_date"], required_date: row["required_date"], shipped_date: row["shipped_date"], shipped_id: row["shipped_id"], freight: row["freight"]
+  Company.create!(
+   organization_id: row["organization_id"],
+   name: row["name"],
+   website: row["website"],
+   country: row["country"],
+   description: row["description"],
+   founded: row["founded"],
+   industry: row["industry"],
+   number_of_employees: row["number_of_employees"]
   )
 end

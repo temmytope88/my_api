@@ -21,10 +21,12 @@ class SessionsController < ApplicationController
                 )
             end 
 
-            session[:user_id] = @user.id 
-            render '/orders/staticpage', notice: "successfully authorised"
+            session[:user_id] = @user.id
+            session[:notice] = "successfully authorised"
+            render '/companies/staticpage'
         else
-            render '/orders/staticpage', alert: "not authorised"
+            session[:alert] =  "Unauthorised"
+            render '/companies/staticpage'
         end
     end    
 end

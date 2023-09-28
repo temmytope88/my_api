@@ -27,7 +27,7 @@ RSpec.configure do |config|
           url: 'https://{defaultHost}',
           variables: {
             defaultHost: {
-              default: 'orderapi99.fly.dev'
+              default: 'organizationsapi.fly.dev'
             }
           }
         }

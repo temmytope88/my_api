@@ -1,0 +1,12 @@
+<% if session[:notice] %>
+    <p style="color: green"><%= session[:notice] %></p>
+<% else %>
+    <p style="color: red"><%= session[:alert] %></p>
+<% end %>
+
+<h1>Organizations Details</h1>
+<%= link_to "All Organizations", companies_path %>
+<%= form_tag( '/auth/google_oauth2', method: "post", data: {turbo: false}, remote: true) do %>
+    <button> Sign in with Google </button>
+<% end %>
+<%= link_to "Swagger Documentation", rswag_ui_path %> 
